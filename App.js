@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, Button, Alert, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, Alert, TouchableOpacity } from 'react-native';
 
 const getRandomInt = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -36,7 +36,7 @@ const countNumbersInExpression = (expression) => {
 const App = () => {
   const [numbers, setNumbers] = useState(generateRandomNumbers());
   const [expression, setExpression] = useState('');
-  const [usedNumbers, setUsedNumbers] = useState(new Set());
+  const [usedNumbers, setUsedNumbers] = useState({});
   const [userValue, setUserValue] = useState(0);
   const [times, setTimes] = useState(3);
   const [targetValue, setTargetValue] = useState(0);
@@ -47,10 +47,13 @@ const App = () => {
   }, [numbers]);
 
   const addToExpression = (value, type) => {
-    if (type === 'number' && usedNumbers.has(value)) return;
+    if (type === 'number' && usedNumbers[value] && usedNumbers[value] >= (numbers.filter(num => num === value).length)) return;
     setExpression(expression + value);
     if (type === 'number') {
-      setUsedNumbers(new Set([...usedNumbers, value]));
+      setUsedNumbers({
+        ...usedNumbers,
+        [value]: (usedNumbers[value] || 0) + 1
+      });
     }
   };
 
@@ -58,7 +61,7 @@ const App = () => {
     const newNumbers = generateRandomNumbers();
     setNumbers(newNumbers);
     setExpression('');
-    setUsedNumbers(new Set());
+    setUsedNumbers({});
     setUserValue(0);
     setTimes(3);
     setTargetValue(generateTargetValue(newNumbers, setGeneratedExpression));
@@ -66,7 +69,7 @@ const App = () => {
 
   const tryAgain = () => {
     setExpression('');
-    setUsedNumbers(new Set());
+    setUsedNumbers({});
     setTimes(times - 1);
   };
 
@@ -77,12 +80,12 @@ const App = () => {
       setUserValue(formattedResult);
       if (formattedResult === targetValue) {
         Alert.alert('Congratulations', 'You won the game!', [
-          { text: 'OK', onPress: () => { } }
+          { text: 'New Game', onPress: resetGame }
         ]);
       } else {
         if (times > 1) {
           Alert.alert('Incorrect', 'Không đúng, vui lòng thử lại.', [
-            { text: 'OK', onPress: tryAgain }
+            { text: 'Retry', onPress: tryAgain }
           ]);
         } else {
           Alert.alert('Game Over', 'Bạn đã hết lượt chơi.', [
@@ -121,9 +124,9 @@ const App = () => {
         {numbers.map((num, index) => (
           <TouchableOpacity
             key={index}
-            style={[styles.button, usedNumbers.has(num) && styles.disabledButton]}
+            style={[styles.button, usedNumbers[num] && usedNumbers[num] >= (numbers.filter(number => number === num).length) && styles.disabledButton]}
             onPress={() => addToExpression(num, 'number')}
-            disabled={usedNumbers.has(num)}
+            disabled={usedNumbers[num] && usedNumbers[num] >= (numbers.filter(number => number === num).length)}
           >
             <Text style={styles.buttonText}>{num}</Text>
           </TouchableOpacity>
@@ -154,7 +157,6 @@ const App = () => {
           </TouchableOpacity>
         )}
       </View>
-      <Text>{expression}</Text>
       <Text style={styles.generatedExpressionText}>Hint : {generatedExpression}</Text>
     </View>
   );
