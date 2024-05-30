@@ -96,16 +96,20 @@ const App = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.times}>{times}</Text>
+      {/* <Text style={styles.times}>{times}</Text> */}
       <View style={styles.area1}>
         <View style={styles.values}>
           <View style={styles.valueContainer}>
-            <Text style={styles.valueText}>Your Value:</Text>
+            <Text style={styles.textValueText}>Your Value:</Text>
             <Text style={styles.valueText}>{userValue}</Text>
           </View>
           <View style={styles.valueContainer}>
-            <Text style={styles.valueText}>Target Value:</Text>
+            <Text style={styles.textValueText}>Target Value:</Text>
             <Text style={styles.valueText}>{targetValue}</Text>
+          </View>
+          <View style={styles.valueContainer}>
+            <Text style={styles.textValueText}>Times:</Text>
+            <Text style={styles.valueText}>{times}</Text>
           </View>
         </View>
 
@@ -169,11 +173,14 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   valueContainer: {
-    flexDirection: 'row',
+    flexDirection: 'column',
+  },
+  textValueText: {
+    color: '#792527',
   },
   valueText: {
     fontSize: 20,
-    paddingHorizontal: 10,
+    paddingHorizontal: 20,
     paddingVertical: 8,
     backgroundColor: '#b8b6b6',
     color: '#792527',
