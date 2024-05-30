@@ -13,15 +13,17 @@ const generateRandomNumbers = () => {
   return nums;
 };
 
-const generateTargetValue = (numbers) => {
+const generateTargetValue = (numbers, setGeneratedExpression) => {
   const operators = ['+', '-', '*', '/'];
   let expression = `${numbers[0]}`;
   for (let i = 1; i < numbers.length; i++) {
     const randomOperator = operators[getRandomInt(0, operators.length - 1)];
     expression += ` ${randomOperator} ${numbers[i]}`;
   }
+  setGeneratedExpression(expression);
   try {
-    return Math.floor(eval(expression));
+    const result = eval(expression);
+    return Number.isInteger(result) ? result : result.toFixed(2);
   } catch (error) {
     return 24; // Fallback target value if there's an error in the expression
   }
@@ -37,10 +39,11 @@ const App = () => {
   const [usedNumbers, setUsedNumbers] = useState(new Set());
   const [userValue, setUserValue] = useState(0);
   const [times, setTimes] = useState(3);
-  const [targetValue, setTargetValue] = useState(generateTargetValue(numbers));
+  const [targetValue, setTargetValue] = useState(0);
+  const [generatedExpression, setGeneratedExpression] = useState('');
 
   useEffect(() => {
-    setTargetValue(generateTargetValue(numbers));
+    setTargetValue(generateTargetValue(numbers, setGeneratedExpression));
   }, [numbers]);
 
   const addToExpression = (value, type) => {
@@ -58,7 +61,7 @@ const App = () => {
     setUsedNumbers(new Set());
     setUserValue(0);
     setTimes(3);
-    setTargetValue(generateTargetValue(newNumbers));
+    setTargetValue(generateTargetValue(newNumbers, setGeneratedExpression));
   };
 
   const tryAgain = () => {
@@ -70,9 +73,9 @@ const App = () => {
   const checkExpression = () => {
     try {
       const result = eval(expression);
-      print(typeof (result))
-      setUserValue(result);
-      if (result === targetValue) {
+      const formattedResult = Number.isInteger(result) ? result : result.toFixed(2);
+      setUserValue(formattedResult);
+      if (formattedResult === targetValue) {
         Alert.alert('Congratulations', 'You won the game!', [
           { text: 'OK', onPress: () => { } }
         ]);
@@ -96,7 +99,6 @@ const App = () => {
 
   return (
     <View style={styles.container}>
-      {/* <Text style={styles.times}>{times}</Text> */}
       <View style={styles.area1}>
         <View style={styles.values}>
           <View style={styles.valueContainer}>
@@ -112,7 +114,6 @@ const App = () => {
             <Text style={styles.valueText}>{times}</Text>
           </View>
         </View>
-
       </View>
 
       <Text style={styles.expression}>{expression}</Text>
@@ -153,6 +154,8 @@ const App = () => {
           </TouchableOpacity>
         )}
       </View>
+      <Text>{expression}</Text>
+      <Text style={styles.generatedExpressionText}>Hint : {generatedExpression}</Text>
     </View>
   );
 };
@@ -231,6 +234,11 @@ const styles = StyleSheet.create({
   actionButtonText: {
     color: '#fff',
     fontSize: 20,
+  },
+  generatedExpressionText: {
+    marginTop: 20,
+    fontSize: 18,
+    color: '#792527',
   },
 });
 
