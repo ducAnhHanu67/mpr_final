@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, Alert, TouchableOpacity } from 'react-native';
-// hàm này để lấy ra số random 
+
 const getRandomInt = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
-// hàm tạo ra 4 số có 2 chữ số
 const generateRandomNumbers = () => {
   let nums = [];
   for (let i = 0; i < 4; i++) {
@@ -23,10 +22,11 @@ const generateTargetValue = (numbers, setGeneratedExpression) => {
   }
   setGeneratedExpression(expression);
   try {
+    // eval tính ra biểu thức 
     const result = eval(expression);
     return Number.isInteger(result) ? result : result.toFixed(2);
   } catch (error) {
-    return 24; // Fallback target value if there's an error in the expression
+    return 0; // Fallback target value if there's an error in the expression
   }
 };
 
@@ -39,8 +39,11 @@ const shuffleArray = (array) => {
 };
 
 const App = () => {
+  // 1 tạo ra numbers gồm 4 số
   const [numbers, setNumbers] = useState(generateRandomNumbers());
+  //2 lưu trữ trạng thái của biêu thức
   const [expression, setExpression] = useState('');
+  // 3 
   const [usedNumbers, setUsedNumbers] = useState({});
   const [userValue, setUserValue] = useState(0);
   const [times, setTimes] = useState(3);
@@ -54,6 +57,7 @@ const App = () => {
   }, [numbers]);
 
   const addToExpression = (value, type) => {
+    // số lần number xuất hiện 
     if (type === 'number' && usedNumbers[value] && usedNumbers[value] >= (numbers.filter(num => num === value).length)) return;
     setExpression(expression + value);
     if (type === 'number') {
@@ -65,6 +69,11 @@ const App = () => {
   };
 
   const resetGame = () => {
+    setExpression('');
+    setUsedNumbers({});
+    setUserValue(0);
+  };
+  const newGame = () => {
     const newNumbers = generateRandomNumbers();
     setNumbers(newNumbers);
     setExpression('');
@@ -84,25 +93,26 @@ const App = () => {
   const checkExpression = () => {
     try {
       const result = eval(expression);
+
       const formattedResult = Number.isInteger(result) ? result : result.toFixed(2);
       setUserValue(formattedResult);
       if (formattedResult === targetValue) {
         Alert.alert('Congratulations', 'You won the game!', [
-          { text: 'New Game', onPress: resetGame }
+          { text: 'New Game', onPress: newGame }
         ]);
       } else {
         if (times > 1) {
-          Alert.alert('Incorrect', 'Không đúng, vui lòng thử lại.', [
+          Alert.alert('Incorrect', 'Your expression is incorrect. Tap the button to try again.', [
             { text: 'Retry', onPress: tryAgain }
           ]);
         } else {
-          Alert.alert('Game Over', 'Bạn đã hết lượt chơi.', [
+          Alert.alert('Game Over', [
             { text: 'OK', onPress: resetGame }
           ]);
         }
       }
     } catch (error) {
-      Alert.alert('Invalid Expression', 'Vui lòng tạo biểu thức hợp lệ.');
+      Alert.alert('Invalid Expression', 'Please create Valid Expression');
     }
   };
 
