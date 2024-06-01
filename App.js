@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, Alert, TouchableOpacity } from 'react-native';
-
+// hàm này để lấy ra số random 
 const getRandomInt = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
+// hàm tạo ra 4 số có 2 chữ số
 const generateRandomNumbers = () => {
   let nums = [];
   for (let i = 0; i < 4; i++) {
@@ -12,7 +13,7 @@ const generateRandomNumbers = () => {
   }
   return nums;
 };
-
+// 
 const generateTargetValue = (numbers, setGeneratedExpression) => {
   const operators = ['+', '-', '*', '/'];
   let expression = `${numbers[0]}`;
@@ -33,6 +34,10 @@ const countNumbersInExpression = (expression) => {
   return (expression.match(/\d+/g) || []).length;
 };
 
+const shuffleArray = (array) => {
+  return array.sort(() => Math.random() - 0.5);
+};
+
 const App = () => {
   const [numbers, setNumbers] = useState(generateRandomNumbers());
   const [expression, setExpression] = useState('');
@@ -41,9 +46,11 @@ const App = () => {
   const [times, setTimes] = useState(3);
   const [targetValue, setTargetValue] = useState(0);
   const [generatedExpression, setGeneratedExpression] = useState('');
+  const [shuffledNumbers, setShuffledNumbers] = useState([]);
 
   useEffect(() => {
     setTargetValue(generateTargetValue(numbers, setGeneratedExpression));
+    setShuffledNumbers(shuffleArray([...numbers]));
   }, [numbers]);
 
   const addToExpression = (value, type) => {
@@ -65,6 +72,7 @@ const App = () => {
     setUserValue(0);
     setTimes(3);
     setTargetValue(generateTargetValue(newNumbers, setGeneratedExpression));
+    setShuffledNumbers(shuffleArray([...newNumbers]));
   };
 
   const tryAgain = () => {
@@ -102,6 +110,7 @@ const App = () => {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.nameOfGame}>EXPRESSION GAME</Text>
       <View style={styles.area1}>
         <View style={styles.values}>
           <View style={styles.valueContainer}>
@@ -121,7 +130,7 @@ const App = () => {
 
       <Text style={styles.expression}>{expression}</Text>
       <View style={styles.row}>
-        {numbers.map((num, index) => (
+        {shuffledNumbers.map((num, index) => (
           <TouchableOpacity
             key={index}
             style={[styles.button, usedNumbers[num] && usedNumbers[num] >= (numbers.filter(number => number === num).length) && styles.disabledButton]}
@@ -169,6 +178,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
     backgroundColor: '#7ab1c8',
+  },
+  nameOfGame: {
+    color: '#792527',
+    fontSize: 28,
+    fontWeight: 5,
+    marginBottom: 20,
   },
   values: {
     flexDirection: 'row',
