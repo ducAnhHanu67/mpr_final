@@ -1,7 +1,8 @@
 // screens/HomeScreen.js
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, Button, StyleSheet, TouchableOpacity } from 'react-native';
-import { NOTES } from '../data/dummy-data';
+import { NOTES, LABELS } from '../data/dummy-data'; // Import dữ liệu nhãn
+import Note from '../components/note';
 
 const HomeScreen = ({ navigation, searchQuery }) => {
     const [filteredNotes, setFilteredNotes] = useState(NOTES);
@@ -17,6 +18,22 @@ const HomeScreen = ({ navigation, searchQuery }) => {
         }
     }, [searchQuery]);
 
+    // Hàm để lấy tên nhãn dựa trên mã nhãn
+    const getLabelNames = (labelIds) => {
+        return labelIds.map(labelId => {
+            const label = LABELS.find(label => label.id === labelId);
+            return label.label
+        }).join(', '); // Sử dụng join để kết hợp các tên nhãn thành một chuỗi ngăn cách bằng dấu phẩy
+
+    };
+    const getLabelNames2 = (labelIds) => {
+        return labelIds.map(labelId => {
+            const label = LABELS.find(label => label.id === labelId);
+            return label ? label.label : null;
+        }).filter(labelName => labelName !== null);
+    };
+
+
     return (
         <View style={styles.container}>
             <FlatList
@@ -24,7 +41,7 @@ const HomeScreen = ({ navigation, searchQuery }) => {
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
                     <TouchableOpacity onPress={() => navigation.navigate('EditNote', { noteId: item.id })}>
-                        <Text style={styles.noteItem}>{item.content}</Text>
+                        <Note content={item.content} labels={getLabelNames2(item.labelIds)} />
                     </TouchableOpacity>
                 )}
             />
