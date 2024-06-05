@@ -31,7 +31,7 @@ function App() {
   return (
     <NavigationContainer>
       <Drawer.Navigator initialRouteName="Home">
-        <Drawer.Screen name="Home" component={HomeStack} />
+        <Drawer.Screen name="Notes" component={HomeStack} />
         <Drawer.Screen name="Labels" component={LabelsScreen} />
         <Drawer.Screen name="Folders" component={FoldersScreen} />
         <Drawer.Screen name="Trash" component={TrashScreen} />
