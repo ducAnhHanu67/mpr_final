@@ -1,8 +1,9 @@
 // screens/HomeScreen.js
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, Button, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import { NOTES, LABELS } from '../data/dummy-data'; // Import dữ liệu nhãn
 import Note from '../components/note';
+import Icon from 'react-native-vector-icons/Ionicons'; // Import Icon from react-native-vector-icons
 
 const HomeScreen = ({ navigation, searchQuery }) => {
     const [filteredNotes, setFilteredNotes] = useState(NOTES);
@@ -45,7 +46,12 @@ const HomeScreen = ({ navigation, searchQuery }) => {
                     </TouchableOpacity>
                 )}
             />
-            <Button title="Add Note" onPress={() => navigation.navigate('NewNote')} />
+            <TouchableOpacity
+                style={styles.addButton}
+                onPress={() => navigation.navigate('NewNote')}
+            >
+                <Icon name="add" size={30} color="#fff" />
+            </TouchableOpacity>
         </View>
     );
 };
@@ -60,6 +66,25 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: '#ddd',
         fontSize: 18,
+    },
+    addButton: {
+        position: 'absolute',
+        bottom: 40,
+        right: 20,
+        backgroundColor: '#3c9fff',
+        borderRadius: 50,
+        width: 60,
+        height: 60,
+        justifyContent: 'center',
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
     },
 });
 

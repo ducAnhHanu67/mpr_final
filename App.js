@@ -40,6 +40,7 @@ function App() {
         <Drawer.Screen
           name="Notes"
           options={{
+
             headerRight: () => (
               <View style={styles.searchContainer}>
                 <TextInput
@@ -77,7 +78,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     paddingHorizontal: 10,
     marginRight: 10,
-    width: 300,
+    width: 250,
   },
   searchContainer: {
     flexDirection: 'row',
