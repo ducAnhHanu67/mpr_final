@@ -1,32 +1,71 @@
 import React, { useState } from 'react';
-import { View, TextInput, StyleSheet, TouchableOpacity, Text, Button, KeyboardAvoidingView, ScrollView } from 'react-native';
+import { View, TextInput, StyleSheet, TouchableOpacity, Text, Button, KeyboardAvoidingView, ScrollView, Alert } from 'react-native';
 import { Modal, Portal, Provider } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { NOTES } from '../data/dummy-data';
+import { NOTES, LABELS } from '../data/dummy-data'; // Import dummy data
+import { useNavigation } from '@react-navigation/native'; // Import useNavigation hook
 
-const EditNoteScreen = ({ route, navigation }) => {
+const EditNoteScreen = ({ route }) => { // Remove `navigation` from function arguments
     const { noteId } = route.params;
     const noteIndex = NOTES.findIndex(n => n.id === noteId);
     const note = NOTES[noteIndex];
     const [content, setContent] = useState(note.content);
     const [visible, setVisible] = useState(false);
     const [selectedColor, setSelectedColor] = useState(note.color || '#FFFFFF'); // Default to white if no color
+    const [labels, setLabels] = useState(note.labelIds || []); // Default to an empty array if no labels
+    const navigation = useNavigation(); // Get navigation object using useNavigation hook
+
+    const getLabelNames = (labelIds) => {
+        return labelIds.map(labelId => {
+            const label = LABELS.find(label => label.id === labelId);
+            return label ? label.label : null;
+        }).filter(labelName => labelName !== null);
+    };
 
     const saveNoteHandler = () => {
         note.content = content;
         note.color = selectedColor;
+        note.labelIds = labels;
         navigation.goBack();
     };
 
     const deleteNoteHandler = () => {
-        NOTES.splice(noteIndex, 1); // Xóa ghi chú khỏi danh sách NOTES
-        navigation.goBack(); // Quay lại màn hình trước đó
+        NOTES.splice(noteIndex, 1);
+        navigation.goBack();
     };
 
     const showModal = () => setVisible(true);
     const hideModal = () => setVisible(false);
 
     const colors = ['#FFFFFF', '#f2c7cd', '#bddcf2', '#9ff5a6', '#f5ed95', '#f2cb8d', '#e88ef5', '#7de7f5', '#f28a7e'];
+
+    const goToManageLabelsScreen = () => {
+        navigation.navigate('ManageLabels', {
+            selectedLabels: labels,
+            onLabelsSelected: (selectedLabels) => {
+                setLabels(selectedLabels);
+            },
+        });
+    };
+
+    const addNewLabel = () => {
+        Alert.prompt(
+            'Add New Label',
+            'Enter the name of the new label:',
+            (text) => {
+                if (text) {
+                    const newLabelId = LABELS.length + 1;
+                    LABELS.push({ id: newLabelId.toString(), label: text });
+                    setLabels([...labels, newLabelId.toString()]);
+                }
+            }
+        );
+    };
+
+    const removeLabel = (labelId) => {
+        const updatedLabels = labels.filter(id => id !== labelId);
+        setLabels(updatedLabels);
+    };
 
     return (
         <Provider>
@@ -52,7 +91,6 @@ const EditNoteScreen = ({ route, navigation }) => {
                 </View>
                 <Portal>
                     <Modal visible={visible} onDismiss={hideModal} contentContainerStyle={styles.modalContent}>
-                        <Text style={styles.menuItem}>Select Note's Color</Text>
                         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.colorPicker}>
                             {colors.map(color => (
                                 <TouchableOpacity
@@ -66,10 +104,21 @@ const EditNoteScreen = ({ route, navigation }) => {
                                 />
                             ))}
                         </ScrollView>
-                        <Text style={styles.menuItem}>Manage Labels</Text>
-                        <TouchableOpacity>
-                            <Text style={styles.labelButton}>+ Manage Labels</Text>
-                        </TouchableOpacity>
+
+                        <View style={styles.labelContainer}>
+                            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                                {getLabelNames(labels).map((label, index) => (
+                                    <TouchableOpacity key={index} onPress={() => removeLabel(labels[index])}>
+                                        <Text style={styles.labelButton}>{label} (x)</Text>
+                                    </TouchableOpacity>
+                                ))}
+                            </ScrollView>
+
+                            <TouchableOpacity onPress={goToManageLabelsScreen}>
+                                <Text style={styles.labelButton}>+ Manage Labels</Text>
+                            </TouchableOpacity>
+                        </View>
+
                         <TouchableOpacity onPress={deleteNoteHandler}>
                             <Text style={styles.menuItem}>Delete Note</Text>
                         </TouchableOpacity>
@@ -130,9 +179,18 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         marginHorizontal: 5,
     },
+    labelContainer: {
+        marginTop: 20,
+    },
     labelButton: {
-        color: 'blue',
-        fontSize: 16,
+        backgroundColor: '#e0e0e0',
+        color: '#333',
+        paddingHorizontal: 6,
+        paddingVertical: 4,
+        borderRadius: 3,
+        marginRight: 5,
+        marginBottom: 5,
+        fontSize: 14,
     },
 });
 

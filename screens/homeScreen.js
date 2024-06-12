@@ -20,13 +20,6 @@ const HomeScreen = ({ navigation, searchQuery }) => {
     }, [searchQuery]);
 
     // Hàm để lấy tên nhãn dựa trên mã nhãn
-    const getLabelNames = (labelIds) => {
-        return labelIds.map(labelId => {
-            const label = LABELS.find(label => label.id === labelId);
-            return label.label
-        }).join(', '); // Sử dụng join để kết hợp các tên nhãn thành một chuỗi ngăn cách bằng dấu phẩy
-
-    };
     const getLabelNames2 = (labelIds) => {
         return labelIds.map(labelId => {
             const label = LABELS.find(label => label.id === labelId);
