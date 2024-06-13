@@ -109,7 +109,7 @@ const EditNoteScreen = ({ route }) => { // Remove `navigation` from function arg
                             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                                 {getLabelNames(labels).map((label, index) => (
                                     <TouchableOpacity key={index} onPress={() => removeLabel(labels[index])}>
-                                        <Text style={styles.labelButton}>{label} (x)</Text>
+                                        <Text style={styles.labelButton}>{label}</Text>
                                     </TouchableOpacity>
                                 ))}
                             </ScrollView>
@@ -119,7 +119,8 @@ const EditNoteScreen = ({ route }) => { // Remove `navigation` from function arg
                             </TouchableOpacity>
                         </View>
 
-                        <TouchableOpacity onPress={deleteNoteHandler}>
+                        <TouchableOpacity style={styles.button} onPress={deleteNoteHandler}>
+                            <Icon name="delete" size={20} color="black" style={styles.icon} />
                             <Text style={styles.menuItem}>Delete Note</Text>
                         </TouchableOpacity>
                     </Modal>
@@ -185,12 +186,26 @@ const styles = StyleSheet.create({
     labelButton: {
         backgroundColor: '#e0e0e0',
         color: '#333',
-        paddingHorizontal: 6,
-        paddingVertical: 4,
+        paddingHorizontal: 10,
+        paddingVertical: 10,
         borderRadius: 3,
         marginRight: 5,
         marginBottom: 5,
         fontSize: 14,
+    },
+    button: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#e0e0e0', // Màu nền cho nút
+        padding: 10,
+        borderRadius: 5,
+    },
+    icon: {
+        marginRight: 10, // Khoảng cách giữa biểu tượng và văn bản
+    },
+    menuItem: {
+        color: 'black', // Màu chữ
+        fontSize: 16,
     },
 });
 
