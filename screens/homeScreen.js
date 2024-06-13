@@ -5,6 +5,7 @@ import { NOTES } from '../data/dummy-data'; // Import dữ liệu nhãn
 import Note from '../components/note';
 import Icon from 'react-native-vector-icons/Ionicons'; // Import Icon from react-native-vector-icons
 import { LabelContext } from '../context/LabelsContext';
+
 const HomeScreen = ({ navigation, searchQuery }) => {
     const [filteredNotes, setFilteredNotes] = useState(NOTES);
     const { labels } = useContext(LabelContext);
@@ -28,18 +29,23 @@ const HomeScreen = ({ navigation, searchQuery }) => {
         }).filter(labelName => labelName !== null);
     };
 
-
     return (
         <View style={styles.container}>
-            <FlatList
-                data={filteredNotes}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item }) => (
-                    <TouchableOpacity onPress={() => navigation.navigate('EditNote', { noteId: item.id })}>
-                        <Note content={item.content} labels={getLabelNames2(item.labelIds)} />
-                    </TouchableOpacity>
-                )}
-            />
+            {filteredNotes.length === 0 ? (
+                <View style={styles.emptyContainer}>
+                    <Text style={styles.emptyText}>Please add a new note</Text>
+                </View>
+            ) : (
+                <FlatList
+                    data={filteredNotes}
+                    keyExtractor={(item) => item.id}
+                    renderItem={({ item }) => (
+                        <TouchableOpacity onPress={() => navigation.navigate('EditNote', { noteId: item.id })}>
+                            <Note content={item.content} labels={getLabelNames2(item.labelIds)} />
+                        </TouchableOpacity>
+                    )}
+                />
+            )}
             <TouchableOpacity
                 style={styles.addButton}
                 onPress={() => navigation.navigate('NewNote')}
@@ -54,6 +60,15 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#f8f8f8',
+    },
+    emptyContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    emptyText: {
+        fontSize: 18,
+        color: '#888',
     },
     noteItem: {
         padding: 15,
