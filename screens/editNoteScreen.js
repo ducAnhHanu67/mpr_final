@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, TextInput, StyleSheet, TouchableOpacity, Text, Button, KeyboardAvoidingView, ScrollView, Alert } from 'react-native';
 import { Modal, Portal, Provider } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { NOTES, LABELS } from '../data/dummy-data'; // Import dummy data
 import { useNavigation } from '@react-navigation/native'; // Import useNavigation hook
+import { LabelContext } from '../context/LabelsContext';
 
 const EditNoteScreen = ({ route }) => { // Remove `navigation` from function arguments
     const { noteId } = route.params;
@@ -12,12 +13,13 @@ const EditNoteScreen = ({ route }) => { // Remove `navigation` from function arg
     const [content, setContent] = useState(note.content);
     const [visible, setVisible] = useState(false);
     const [selectedColor, setSelectedColor] = useState(note.color || '#FFFFFF'); // Default to white if no color
-    const [labels, setLabels] = useState(note.labelIds || []); // Default to an empty array if no labels
+    const [selectedlabels, setSelectedLabels] = useState(note.labelIds || []); // Default to an empty array if no labels
     const navigation = useNavigation(); // Get navigation object using useNavigation hook
+    const { labels } = useContext(LabelContext);
 
     const getLabelNames = (labelIds) => {
         return labelIds.map(labelId => {
-            const label = LABELS.find(label => label.id === labelId);
+            const label = labels.find(label => label.id === labelId);
             return label ? label.label : null;
         }).filter(labelName => labelName !== null);
     };
@@ -25,7 +27,7 @@ const EditNoteScreen = ({ route }) => { // Remove `navigation` from function arg
     const saveNoteHandler = () => {
         note.content = content;
         note.color = selectedColor;
-        note.labelIds = labels;
+        note.labelIds = selectedlabels;
         navigation.goBack();
     };
 
@@ -41,9 +43,9 @@ const EditNoteScreen = ({ route }) => { // Remove `navigation` from function arg
 
     const goToManageLabelsScreen = () => {
         navigation.navigate('ManageLabels', {
-            selectedLabels: labels,
+            selectedLabels: selectedlabels,
             onLabelsSelected: (selectedLabels) => {
-                setLabels(selectedLabels);
+                setSelectedLabels(selectedLabels);
             },
         });
     };
@@ -62,10 +64,6 @@ const EditNoteScreen = ({ route }) => { // Remove `navigation` from function arg
         );
     };
 
-    const removeLabel = (labelId) => {
-        const updatedLabels = labels.filter(id => id !== labelId);
-        setLabels(updatedLabels);
-    };
 
     return (
         <Provider>
@@ -107,8 +105,8 @@ const EditNoteScreen = ({ route }) => { // Remove `navigation` from function arg
 
                         <View style={styles.labelContainer}>
                             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                                {getLabelNames(labels).map((label, index) => (
-                                    <TouchableOpacity key={index} onPress={() => removeLabel(labels[index])}>
+                                {getLabelNames(selectedlabels).map((label, index) => (
+                                    <TouchableOpacity key={index}>
                                         <Text style={styles.labelButton}>{label}</Text>
                                     </TouchableOpacity>
                                 ))}

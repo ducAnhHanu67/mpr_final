@@ -14,6 +14,7 @@ import TrashScreen from './screens/trashScreen';
 import NewNoteScreen from './screens/newNoteScreen';
 import EditNoteScreen from './screens/editNoteScreen';
 import ManageLabelsScreen from './screens/manageLabelsScreen';
+import { LabelProvider } from './context/LabelsContext';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -36,36 +37,38 @@ function App() {
 
   return (
     <NavigationContainer>
-      <Drawer.Navigator initialRouteName="Home">
-        <Drawer.Screen
-          name="Notes"
-          options={{
+      <LabelProvider>
+        <Drawer.Navigator initialRouteName="Home">
+          <Drawer.Screen
+            name="Notes"
+            options={{
 
-            headerRight: () => (
-              <View style={styles.searchContainer}>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Search"
-                  value={searchQuery}
-                  onChangeText={setSearchQuery}
-                />
-                <Icon
-                  name="search"
-                  size={25}
-                  color="#000"
-                  style={styles.icon}
-                />
-              </View>
-            ),
-            headerTitle: 'Notes'
-          }}
-        >
-          {props => <HomeStack {...props} searchQuery={searchQuery} />}
-        </Drawer.Screen>
-        <Drawer.Screen name="Labels" component={LabelsScreen} />
-        <Drawer.Screen name="Folders" component={FoldersScreen} />
-        <Drawer.Screen name="Trash" component={TrashScreen} />
-      </Drawer.Navigator>
+              headerRight: () => (
+                <View style={styles.searchContainer}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Search"
+                    value={searchQuery}
+                    onChangeText={setSearchQuery}
+                  />
+                  <Icon
+                    name="search"
+                    size={25}
+                    color="#000"
+                    style={styles.icon}
+                  />
+                </View>
+              ),
+              headerTitle: 'Notes'
+            }}
+          >
+            {props => <HomeStack {...props} searchQuery={searchQuery} />}
+          </Drawer.Screen>
+          <Drawer.Screen name="Labels" component={LabelsScreen} />
+          <Drawer.Screen name="Folders" component={FoldersScreen} />
+          <Drawer.Screen name="Trash" component={TrashScreen} />
+        </Drawer.Navigator>
+      </LabelProvider>
     </NavigationContainer>
   );
 }

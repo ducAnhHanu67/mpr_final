@@ -1,34 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet, Modal } from 'react-native';
 import { LABELS } from '../data/dummy-data';
 import Label from '../models/lable';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { LabelContext } from '../context/LabelsContext';
 
 const LabelsScreen = ({ navigation }) => {
     const [search, setSearch] = useState('');
-    const [labels, setLabels] = useState(LABELS);
+    // const [labels, setLabels] = useState(LABELS);
+    const { labels, addLabel, editLabel, deleteLabel } = useContext(LabelContext);
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedLabel, setSelectedLabel] = useState(null);
 
     const addLabelHandler = () => {
         const newLabel = new Label(`l${labels.length + 1}`, search);
-        setLabels([...labels, newLabel]);
+        addLabel(newLabel)
         setSearch('');
     };
 
     const editLabelHandler = (labelId, newLabelName) => {
-        setLabels((currentLabels) =>
-            currentLabels.map((label) =>
-                label.id === labelId ? { ...label, label: newLabelName } : label
-            )
-        );
+        editLabel(labelId, newLabelName);
         setModalVisible(false);
     };
 
     const deleteLabelHandler = (labelId) => {
-        setLabels((currentLabels) =>
-            currentLabels.filter((label) => label.id !== labelId)
-        );
+        deleteLabel(labelId);
         setModalVisible(false);
     };
 

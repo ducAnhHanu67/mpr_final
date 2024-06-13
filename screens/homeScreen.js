@@ -1,12 +1,13 @@
 // screens/HomeScreen.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
-import { NOTES, LABELS } from '../data/dummy-data'; // Import dữ liệu nhãn
+import { NOTES } from '../data/dummy-data'; // Import dữ liệu nhãn
 import Note from '../components/note';
 import Icon from 'react-native-vector-icons/Ionicons'; // Import Icon from react-native-vector-icons
-
+import { LabelContext } from '../context/LabelsContext';
 const HomeScreen = ({ navigation, searchQuery }) => {
     const [filteredNotes, setFilteredNotes] = useState(NOTES);
+    const { labels } = useContext(LabelContext);
 
     useEffect(() => {
         if (searchQuery) {
@@ -22,7 +23,7 @@ const HomeScreen = ({ navigation, searchQuery }) => {
     // Hàm để lấy tên nhãn dựa trên mã nhãn
     const getLabelNames2 = (labelIds) => {
         return labelIds.map(labelId => {
-            const label = LABELS.find(label => label.id === labelId);
+            const label = labels.find(label => label.id === labelId);
             return label ? label.label : null;
         }).filter(labelName => labelName !== null);
     };

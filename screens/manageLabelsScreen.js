@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
 import { LABELS } from '../data/dummy-data';
+import { LabelContext } from '../context/LabelsContext';
 
 const ManageLabelsScreen = ({ navigation, route }) => {
     const { selectedLabels: initialSelectedLabels, onLabelsSelected } = route.params;
     const [selectedLabels, setSelectedLabels] = useState(initialSelectedLabels || []);
     const [searchText, setSearchText] = useState('');
+    const { labels } = useContext(LabelContext);
 
     useEffect(() => {
         if (route.params && route.params.selectedLabels) {
@@ -39,7 +41,7 @@ const ManageLabelsScreen = ({ navigation, route }) => {
                 onChangeText={setSearchText}
             />
             <FlatList
-                data={LABELS}
+                data={labels}
                 keyExtractor={(item) => item.id}
                 numColumns={3}
                 renderItem={({ item }) => (
