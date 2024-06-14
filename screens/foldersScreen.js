@@ -1,16 +1,39 @@
-// screens/FoldersScreen.js
+
 import React, { useState } from 'react';
 import { View, TextInput, TouchableOpacity, FlatList, Text, StyleSheet } from 'react-native';
+import { NOTES } from '../data/dummy-data';
+import { useNavigation } from '@react-navigation/native';
 
 const FoldersScreen = () => {
-    const [folders, setFolders] = useState([]);
     const [folderName, setFolderName] = useState('');
+    const navigation = useNavigation();
 
     const addFolderHandler = () => {
         if (folderName.trim()) {
-            setFolders([...folders, { id: `f${folders.length + 1}`, name: folderName }]);
             setFolderName('');
         }
+    };
+
+    const groupedNotes = NOTES.reduce((acc, note) => {
+        const folder = note.folder || 'Uncategorized';
+        if (!acc[folder]) {
+            acc[folder] = [];
+        }
+        acc[folder].push(note);
+        return acc;
+    }, {});
+
+    const folders = Object.keys(groupedNotes).map(folder => ({
+        name: folder,
+        notes: groupedNotes[folder],
+    }));
+
+    const getLastModifiedTime = (notes) => {
+        return notes.reduce((latest, note) => note.date > latest ? note.date : latest, new Date(0));
+    };
+
+    const navigateToFolderDetail = (folderName) => {
+        navigation.navigate('FolderDetail', { folderName });
     };
 
     return (
@@ -28,12 +51,12 @@ const FoldersScreen = () => {
             </View>
             <FlatList
                 data={folders}
-                keyExtractor={(item) => item.id}
+                keyExtractor={(item) => item.name}
                 renderItem={({ item }) => (
-                    <TouchableOpacity style={styles.folderItem}>
+                    <TouchableOpacity style={styles.folderItem} onPress={() => navigateToFolderDetail(item.name)}>
                         <Text style={styles.folderText}>{item.name}</Text>
-                        <Text style={styles.noteCount}>0 notes</Text>
-                        <Text style={styles.timeStamp}>3 hrs ago</Text>
+                        <Text style={styles.noteCount}>{item.notes.length} notes</Text>
+                        <Text style={styles.timeStamp}>{getLastModifiedTime(item.notes).toLocaleString()}</Text>
                     </TouchableOpacity>
                 )}
             />

@@ -1,11 +1,12 @@
 class Note {
-    constructor(id, color, labelIds, content, updateAt, isBookmarked) {
+    constructor(id, color, labelIds, content, updateAt, isBookmarked, folder) {
         this.id = id;
         this.color = color;
         this.labelIds = labelIds;
         this.content = content;
         this.updateAt = updateAt;
-        this.isBookmarked = isBookmarked; 0
+        this.isBookmarked = isBookmarked;
+        this.folder = folder;
     }
 }
 export default Note;

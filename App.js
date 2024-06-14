@@ -15,6 +15,7 @@ import NewNoteScreen from './screens/newNoteScreen';
 import EditNoteScreen from './screens/editNoteScreen';
 import ManageLabelsScreen from './screens/manageLabelsScreen';
 import { LabelProvider } from './context/LabelsContext';
+import FolderDetailScreen from './screens/FolderDetailScreen';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -28,6 +29,10 @@ function HomeStack({ searchQuery }) {
       <Stack.Screen name="NewNote" component={NewNoteScreen} />
       <Stack.Screen name="EditNote" component={EditNoteScreen} />
       <Stack.Screen name="ManageLabels" component={ManageLabelsScreen} />
+      <Stack.Screen name="Folders" component={FoldersScreen} />
+      <Stack.Screen name="FolderDetail" component={FolderDetailScreen} />
+
+
     </Stack.Navigator>
   );
 }
@@ -40,7 +45,7 @@ function App() {
       <LabelProvider>
         <Drawer.Navigator initialRouteName="Home">
           <Drawer.Screen
-            name="Notes"
+            name="Home"
             options={{
 
               headerRight: () => (
