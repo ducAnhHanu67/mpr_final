@@ -5,7 +5,7 @@ class Note {
         this.labelIds = labelIds;
         this.content = content;
         this.updateAt = updateAt;
-        this.isBookmarked = isBookmarked;
+        this.isBookmarked = isBookmarked; 0
     }
 }
 export default Note;

@@ -2,19 +2,20 @@ import React, { useState, useContext } from 'react';
 import { View, TextInput, StyleSheet, TouchableOpacity, Text, Button, KeyboardAvoidingView, ScrollView, Alert } from 'react-native';
 import { Modal, Portal, Provider } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { NOTES, LABELS } from '../data/dummy-data'; // Import dummy data
-import { useNavigation } from '@react-navigation/native'; // Import useNavigation hook
+import { NOTES, LABELS } from '../data/dummy-data';
+import { useNavigation } from '@react-navigation/native';
 import { LabelContext } from '../context/LabelsContext';
 
-const EditNoteScreen = ({ route }) => { // Remove `navigation` from function arguments
+const EditNoteScreen = ({ route }) => {
     const { noteId } = route.params;
     const noteIndex = NOTES.findIndex(n => n.id === noteId);
     const note = NOTES[noteIndex];
     const [content, setContent] = useState(note.content);
     const [visible, setVisible] = useState(false);
-    const [selectedColor, setSelectedColor] = useState(note.color || '#FFFFFF'); // Default to white if no color
-    const [selectedlabels, setSelectedLabels] = useState(note.labelIds || []); // Default to an empty array if no labels
-    const navigation = useNavigation(); // Get navigation object using useNavigation hook
+    const [selectedColor, setSelectedColor] = useState(note.color || '#FFFFFF');
+    const [selectedLabels, setSelectedLabels] = useState(note.labelIds || []);
+    const [isBookmarked, setIsBookmarked] = useState(note.isBookmarked || false); // New state for bookmark
+    const navigation = useNavigation();
     const { labels } = useContext(LabelContext);
 
     const getLabelNames = (labelIds) => {
@@ -27,13 +28,18 @@ const EditNoteScreen = ({ route }) => { // Remove `navigation` from function arg
     const saveNoteHandler = () => {
         note.content = content;
         note.color = selectedColor;
-        note.labelIds = selectedlabels;
+        note.labelIds = selectedLabels;
+        note.isBookmarked = isBookmarked; // Save bookmark status
         navigation.goBack();
     };
 
     const deleteNoteHandler = () => {
         NOTES.splice(noteIndex, 1);
         navigation.goBack();
+    };
+
+    const toggleBookmark = () => {
+        setIsBookmarked(prevState => !prevState); // Toggle bookmark status
     };
 
     const showModal = () => setVisible(true);
@@ -43,7 +49,7 @@ const EditNoteScreen = ({ route }) => { // Remove `navigation` from function arg
 
     const goToManageLabelsScreen = () => {
         navigation.navigate('ManageLabels', {
-            selectedLabels: selectedlabels,
+            selectedLabels: selectedLabels,
             onLabelsSelected: (selectedLabels) => {
                 setSelectedLabels(selectedLabels);
             },
@@ -64,7 +70,6 @@ const EditNoteScreen = ({ route }) => { // Remove `navigation` from function arg
         );
     };
 
-
     return (
         <Provider>
             <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
@@ -79,8 +84,8 @@ const EditNoteScreen = ({ route }) => { // Remove `navigation` from function arg
                 <View style={styles.bottomTabMenu}>
                     <Text style={styles.editedText}>Edited 11 hrs ago</Text>
                     <View style={styles.iconsContainer}>
-                        <TouchableOpacity>
-                            <Icon name="bookmark-outline" size={24} />
+                        <TouchableOpacity onPress={toggleBookmark}>
+                            <Icon name={isBookmarked ? "bookmark" : "bookmark-outline"} size={24} />
                         </TouchableOpacity>
                         <TouchableOpacity onPress={showModal}>
                             <Icon name="more-vert" size={24} />
@@ -105,7 +110,7 @@ const EditNoteScreen = ({ route }) => { // Remove `navigation` from function arg
 
                         <View style={styles.labelContainer}>
                             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                                {getLabelNames(selectedlabels).map((label, index) => (
+                                {getLabelNames(selectedLabels).map((label, index) => (
                                     <TouchableOpacity key={index}>
                                         <Text style={styles.labelButton}>{label}</Text>
                                     </TouchableOpacity>
@@ -194,15 +199,15 @@ const styles = StyleSheet.create({
     button: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#e0e0e0', // Màu nền cho nút
+        backgroundColor: '#e0e0e0',
         padding: 10,
         borderRadius: 5,
     },
     icon: {
-        marginRight: 10, // Khoảng cách giữa biểu tượng và văn bản
+        marginRight: 10,
     },
     menuItem: {
-        color: 'black', // Màu chữ
+        color: 'black',
         fontSize: 16,
     },
 });
