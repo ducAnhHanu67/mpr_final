@@ -1,23 +1,28 @@
 // screens/NewNoteScreen.js
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, TextInput, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { NOTES } from '../data/dummy-data';
 import Note from '../models/note';
 import Icon from 'react-native-vector-icons/Ionicons'; // Import Icon from react-native-vector-icons
+import { NoteContext } from '../context/NotesContext';
 
-const NewNoteScreen = ({ navigation }) => {
-    const [content, setContent] = useState('');
+const NewNoteScreen = ({ navigation, route }) => {
+    const { notes, updateNotes } = useContext(NoteContext);
+    const { folderName } = route.params;
+    const [content, setContent] = useState();
 
     const addNoteHandler = () => {
         const newNote = new Note(
-            `n${NOTES.length + 1}`,
+            `n${notes.length + 1}`,
             null,
             [],
             content,
             new Date(),
-            false
+            false,
+            folderName,
         );
-        NOTES.push(newNote);
+        const newNotes = [...notes, newNote];
+        updateNotes(newNotes)
         navigation.goBack();
     };
 

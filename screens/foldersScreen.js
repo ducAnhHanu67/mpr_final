@@ -1,11 +1,12 @@
 
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, TextInput, TouchableOpacity, FlatList, Text, StyleSheet } from 'react-native';
 import { NOTES } from '../data/dummy-data';
 import { useNavigation } from '@react-navigation/native';
-
+import { NoteContext } from '../context/NotesContext';
 const FoldersScreen = () => {
     const [folderName, setFolderName] = useState('');
+    const { notes, updateNotes } = useContext(NoteContext);
     const navigation = useNavigation();
 
     const addFolderHandler = () => {
@@ -14,7 +15,7 @@ const FoldersScreen = () => {
         }
     };
 
-    const groupedNotes = NOTES.reduce((acc, note) => {
+    const groupedNotes = notes.reduce((acc, note) => {
         const folder = note.folder || 'Uncategorized';
         if (!acc[folder]) {
             acc[folder] = [];

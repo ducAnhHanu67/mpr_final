@@ -1,14 +1,16 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
 import { NOTES } from '../data/dummy-data';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { NoteContext } from '../context/NotesContext';
 
 const FolderDetailScreen = ({ route }) => {
     const { folderName } = route.params;
+    const { notes, updateNotes } = useContext(NoteContext);
     const navigation = useNavigation();
 
-    const notesInFolder = NOTES.filter(note => note.folder === folderName);
+    const notesInFolder = notes.filter(note => note.folder === folderName);
 
     const renderNoteItem = ({ item }) => (
         <TouchableOpacity style={styles.noteItem} onPress={() => navigation.navigate('EditNote', { noteId: item.id })}>
@@ -24,6 +26,10 @@ const FolderDetailScreen = ({ route }) => {
         </TouchableOpacity>
     );
 
+    const handleAddNote = () => {
+        navigation.navigate('NewNote', { folderName });
+    };
+
     return (
         <View style={styles.container}>
             <Text style={styles.headerText}>{folderName}</Text>
@@ -32,6 +38,9 @@ const FolderDetailScreen = ({ route }) => {
                 keyExtractor={(item) => item.id}
                 renderItem={renderNoteItem}
             />
+            <TouchableOpacity style={styles.addButton} onPress={handleAddNote}>
+                <Icon name="add" size={30} color="#fff" />
+            </TouchableOpacity>
         </View>
     );
 };
@@ -41,6 +50,7 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 16,
         backgroundColor: '#fff',
+        position: 'relative', // Ensure children can be absolutely positioned relative to this container
     },
     headerText: {
         fontSize: 24,
@@ -62,6 +72,18 @@ const styles = StyleSheet.create({
     noteActions: {
         flexDirection: 'row',
         justifyContent: 'space-between',
+    },
+    addButton: {
+        backgroundColor: '#007bff',
+        width: 60,
+        height: 60,
+        borderRadius: 30, // Make it circular
+        alignItems: 'center',
+        justifyContent: 'center',
+        position: 'absolute', // Position absolutely within container
+        bottom: 20,
+        right: 20,
+        elevation: 3, // Add elevation for Android shadow
     },
 });
 

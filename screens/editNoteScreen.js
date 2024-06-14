@@ -5,11 +5,13 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { NOTES, LABELS } from '../data/dummy-data';
 import { useNavigation } from '@react-navigation/native';
 import { LabelContext } from '../context/LabelsContext';
+import { NoteContext } from '../context/NotesContext';
 
 const EditNoteScreen = ({ route }) => {
+    const { notes, updateNotes } = useContext(NoteContext)
     const { noteId } = route.params;
-    const noteIndex = NOTES.findIndex(n => n.id === noteId);
-    const note = NOTES[noteIndex];
+    const noteIndex = notes.findIndex(n => n.id === noteId);
+    const note = notes[noteIndex];
     const [content, setContent] = useState(note.content);
     const [visible, setVisible] = useState(false);
     const [selectedColor, setSelectedColor] = useState(note.color || '#FFFFFF');
@@ -34,7 +36,8 @@ const EditNoteScreen = ({ route }) => {
     };
 
     const deleteNoteHandler = () => {
-        NOTES.splice(noteIndex, 1);
+        const newNotes = notes.splice(noteIndex, 1);
+        updateNotes(newNotes)
         navigation.goBack();
     };
 
@@ -54,20 +57,6 @@ const EditNoteScreen = ({ route }) => {
                 setSelectedLabels(selectedLabels);
             },
         });
-    };
-
-    const addNewLabel = () => {
-        Alert.prompt(
-            'Add New Label',
-            'Enter the name of the new label:',
-            (text) => {
-                if (text) {
-                    const newLabelId = LABELS.length + 1;
-                    LABELS.push({ id: newLabelId.toString(), label: text });
-                    setLabels([...labels, newLabelId.toString()]);
-                }
-            }
-        );
     };
 
     return (

@@ -1,36 +1,37 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
-import { NOTES } from '../data/dummy-data'; // Import dữ liệu nhãn
-import Icon from 'react-native-vector-icons/Ionicons'; // Import Icon from react-native-vector-icons
+import Icon from 'react-native-vector-icons/Ionicons';
+import moment from 'moment';
+import { NoteContext } from '../context/NotesContext';
 import { LabelContext } from '../context/LabelsContext';
-import moment from 'moment'; // Import moment.js for date formatting
 
 const HomeScreen = ({ navigation, searchQuery }) => {
-    const [filteredNotes, setFilteredNotes] = useState(NOTES);
+    const { notes, updateNotes } = useContext(NoteContext);
     const { labels } = useContext(LabelContext);
+    const [filteredNotes, setFilteredNotes] = useState(notes); // Initialize with notes from context
     const [showBookmarked, setShowBookmarked] = useState(false);
 
     useEffect(() => {
         filterNotes();
-    }, [searchQuery, showBookmarked]);
+    }, [searchQuery, showBookmarked, notes]); // Add 'notes' to dependency array
 
     const filterNotes = () => {
-        let notes = NOTES;
+        let filtered = notes.slice(); // Copy 'notes' from context
 
         if (searchQuery) {
-            notes = notes.filter(note =>
+            filtered = filtered.filter(note =>
                 note.content.toLowerCase().includes(searchQuery.toLowerCase())
             );
         }
 
         if (showBookmarked) {
-            notes = notes.filter(note => note.isBookmarked);
+            filtered = filtered.filter(note => note.isBookmarked);
         }
 
-        setFilteredNotes(notes);
+        setFilteredNotes(filtered);
     };
 
-    const getLabelNames2 = (labelIds) => {
+    const getLabelNames = (labelIds) => {
         return labelIds.map(labelId => {
             const label = labels.find(label => label.id === labelId);
             return label ? label.label : null;
@@ -71,7 +72,7 @@ const HomeScreen = ({ navigation, searchQuery }) => {
                                 <Text style={styles.noteContent}>{item.content}</Text>
                                 <View style={styles.noteFooter}>
                                     <FlatList
-                                        data={getLabelNames2(item.labelIds)}
+                                        data={getLabelNames(item.labelIds)}
                                         keyExtractor={(label, index) => index.toString()}
                                         renderItem={({ item: label }) => (
                                             <Text style={styles.label}>{label}</Text>
@@ -86,8 +87,9 @@ const HomeScreen = ({ navigation, searchQuery }) => {
                 />
             )}
             <TouchableOpacity
+
                 style={styles.addButton}
-                onPress={() => navigation.navigate('NewNote')}
+                onPress={() => navigation.navigate('NewNote', { folderName: null })}
             >
                 <Icon name="add" size={30} color="#fff" />
             </TouchableOpacity>
