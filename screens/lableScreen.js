@@ -60,9 +60,6 @@ const LabelsScreen = ({ navigation }) => {
                 )}
                 contentContainerStyle={styles.labelList}
             />
-            <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                <Text style={styles.backButtonText}>Manage Labels</Text>
-            </TouchableOpacity>
             {selectedLabel && (
                 <Modal
                     animationType="slide"
