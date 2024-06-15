@@ -55,9 +55,13 @@ const HomeScreen = ({ navigation, searchQuery }) => {
     return (
         <View style={styles.container}>
             {filteredNotes.length === 0 ? (
-                <View style={styles.emptyContainer}>
-                    <Text style={styles.emptyText}>Please add a new note</Text>
-                </View>
+                filteredNotes.length === 0 && notes.length === 0 ?
+                    <View style={styles.emptyContainer}>
+                        <Text style={styles.emptyText}>Please Add NewNote</Text>
+                    </View> :
+                    <View style={styles.emptyContainer}>
+                        <Text style={styles.emptyText}>Not Found !</Text>
+                    </View>
             ) : (
                 <FlatList
                     data={filteredNotes}
