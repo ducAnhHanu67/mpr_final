@@ -1,11 +1,10 @@
-// In App.js
 import 'react-native-gesture-handler';
 import React, { useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { TextInput, StyleSheet, View } from 'react-native';
+import { TextInput, StyleSheet, View, Text } from 'react-native';
 
 import HomeScreen from './screens/homeScreen';
 import LabelsScreen from './screens/lableScreen';
@@ -33,8 +32,6 @@ function HomeStack({ searchQuery }) {
       <Stack.Screen name="ManageLabels" component={ManageLabelsScreen} />
       <Stack.Screen name="Folders" component={FoldersScreen} />
       <Stack.Screen name="FolderDetail" component={FolderDetailScreen} />
-
-
     </Stack.Navigator>
   );
 }
@@ -51,7 +48,6 @@ function App() {
               <Drawer.Screen
                 name="Home"
                 options={{
-
                   headerRight: () => (
                     <View style={styles.searchContainer}>
                       <TextInput
@@ -68,7 +64,11 @@ function App() {
                       />
                     </View>
                   ),
-                  headerTitle: 'Notes'
+                  headerTitle: () => (
+                    <View style={styles.headerTitleContainer}>
+                      {/* <Text style={styles.headerTitleText}>Notes</Text> */}
+                    </View>
+                  ),
                 }}
               >
                 {props => <HomeStack {...props} searchQuery={searchQuery} />}
@@ -100,6 +100,13 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginRight: 15,
+  },
+  headerTitleContainer: {
+    marginLeft: 10,
+  },
+  headerTitleText: {
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });
 
