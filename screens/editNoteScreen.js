@@ -1,22 +1,21 @@
 import React, { useState, useContext } from 'react';
-import { View, TextInput, StyleSheet, TouchableOpacity, Text, Button, KeyboardAvoidingView, ScrollView, Alert } from 'react-native';
+import { View, TextInput, StyleSheet, TouchableOpacity, Text, Button, KeyboardAvoidingView, ScrollView } from 'react-native';
 import { Modal, Portal, Provider } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { NOTES, LABELS } from '../data/dummy-data';
 import { useNavigation } from '@react-navigation/native';
 import { LabelContext } from '../context/LabelsContext';
 import { NoteContext } from '../context/NotesContext';
 
 const EditNoteScreen = ({ route }) => {
-    const { notes, updateNotes } = useContext(NoteContext)
+    const { notes, updateNotes } = useContext(NoteContext);
     const { noteId } = route.params;
     const noteIndex = notes.findIndex(n => n.id === noteId);
     const note = notes[noteIndex];
-    const [content, setContent] = useState(note.content);
+    const [content, setContent] = useState(note ? note.content : ''); // Khởi tạo content từ note.content
     const [visible, setVisible] = useState(false);
-    const [selectedColor, setSelectedColor] = useState(note.color || '#FFFFFF');
-    const [selectedLabels, setSelectedLabels] = useState(note.labelIds || []);
-    const [isBookmarked, setIsBookmarked] = useState(note.isBookmarked || false); // New state for bookmark
+    const [selectedColor, setSelectedColor] = useState(note ? note.color || '#FFFFFF' : '#FFFFFF'); // Khởi tạo selectedColor từ note.color
+    const [selectedLabels, setSelectedLabels] = useState(note ? note.labelIds || [] : []); // Khởi tạo selectedLabels từ note.labelIds
+    const [isBookmarked, setIsBookmarked] = useState(note ? note.isBookmarked || false : false); // Khởi tạo isBookmarked từ note.isBookmarked
     const navigation = useNavigation();
     const { labels } = useContext(LabelContext);
 
@@ -28,16 +27,32 @@ const EditNoteScreen = ({ route }) => {
     };
 
     const saveNoteHandler = () => {
+        // Kiểm tra xem note có tồn tại không trước khi lưu
+        if (!note) {
+            return;
+        }
+
         note.content = content;
         note.color = selectedColor;
         note.labelIds = selectedLabels;
-        note.isBookmarked = isBookmarked; // Save bookmark status
+        note.isBookmarked = isBookmarked;
+
         navigation.goBack();
     };
 
     const deleteNoteHandler = () => {
-        const newNotes = notes.splice(noteIndex, 1);
-        updateNotes(newNotes)
+        // Kiểm tra xem note có tồn tại không trước khi xóa
+        if (!note) {
+            return;
+        }
+
+        // Tạo một bản sao của mảng notes
+        const updatedNotes = notes.filter(n => n.id !== noteId);
+
+        // Cập nhật context với mảng notes đã cập nhật
+        updateNotes(updatedNotes);
+
+        // Điều hướng trở lại hoặc thực hiện các hành động khác
         navigation.goBack();
     };
 
