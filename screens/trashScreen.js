@@ -1,36 +1,36 @@
 // screens/TrashScreen.js
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { TRASH, NOTES } from '../data/dummy-data';
-import Icon from 'react-native-vector-icons/Ionicons'; // Import Icon from react-native-vector-icons
+import { NoteContext } from '../context/NotesContext';
+import { TrashContext } from '../context/TrashsContext';
 
 const TrashScreen = () => {
-    const [trashNotes, setTrashNotes] = useState(TRASH);
+    const { notes, updateNotes } = useContext(NoteContext);
+    const { trashs, updateTrash } = useContext(TrashContext);
 
     const restoreNoteHandler = (noteId) => {
-        const noteIndex = TRASH.findIndex(n => n.id === noteId);
-        const note = TRASH.splice(noteIndex, 1)[0];
-        NOTES.push(note);
-        setTrashNotes([...TRASH]);
+        const noteIndex = trashs.findIndex(n => n.id === noteId);
+        const note = trashs.splice(noteIndex, 1)[0];
+        updateTrash([...trashs]);
+        updateNotes([...notes, note]);
     };
 
     const deleteNoteHandler = (noteId) => {
-        const noteIndex = TRASH.findIndex(n => n.id === noteId);
-        TRASH.splice(noteIndex, 1);
-        setTrashNotes([...TRASH]);
+        const noteIndex = trashs.findIndex(n => n.id === noteId);
+        trashs.splice(noteIndex, 1);
+        updateTrash([...trashs]);
     };
 
     const restoreAllHandler = () => {
-        while (TRASH.length > 0) {
-            const note = TRASH.pop();
-            NOTES.push(note);
+        while (trashs.length > 0) {
+            const note = trashs.pop();
+            updateNotes([...notes, note]);
         }
-        setTrashNotes([...TRASH]);
+        updateTrash([...trashs]);
     };
 
     const emptyTrashHandler = () => {
-        TRASH.length = 0;
-        setTrashNotes([...TRASH]);
+        updateTrash([]);
     };
 
     const showActionDialog = (noteId) => {
@@ -48,7 +48,7 @@ const TrashScreen = () => {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <Text style={styles.headerText}>{trashNotes.length} notes in trash</Text>
+                <Text style={styles.headerText}>{trashs.length} notes in trash</Text>
                 <View style={styles.headerButtons}>
                     <TouchableOpacity style={styles.headerButton} onPress={restoreAllHandler}>
                         <Text style={styles.headerButtonText}>Restore</Text>
@@ -59,7 +59,7 @@ const TrashScreen = () => {
                 </View>
             </View>
             <FlatList
-                data={trashNotes}
+                data={trashs}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
                     <TouchableOpacity onPress={() => showActionDialog(item.id)} style={styles.note}>
@@ -70,6 +70,7 @@ const TrashScreen = () => {
         </View>
     );
 };
+
 
 const styles = StyleSheet.create({
     container: {

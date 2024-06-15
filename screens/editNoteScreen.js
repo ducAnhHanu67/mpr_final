@@ -5,17 +5,19 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
 import { LabelContext } from '../context/LabelsContext';
 import { NoteContext } from '../context/NotesContext';
+import { TrashContext } from '../context/TrashsContext'; // Import TrashContext
 
 const EditNoteScreen = ({ route }) => {
     const { notes, updateNotes } = useContext(NoteContext);
+    const { trashs, updateTrash } = useContext(TrashContext); // Use TrashContext
     const { noteId } = route.params;
     const noteIndex = notes.findIndex(n => n.id === noteId);
     const note = notes[noteIndex];
-    const [content, setContent] = useState(note ? note.content : ''); // Khởi tạo content từ note.content
+    const [content, setContent] = useState(note ? note.content : ''); // Initialize content from note.content
     const [visible, setVisible] = useState(false);
-    const [selectedColor, setSelectedColor] = useState(note ? note.color || '#FFFFFF' : '#FFFFFF'); // Khởi tạo selectedColor từ note.color
-    const [selectedLabels, setSelectedLabels] = useState(note ? note.labelIds || [] : []); // Khởi tạo selectedLabels từ note.labelIds
-    const [isBookmarked, setIsBookmarked] = useState(note ? note.isBookmarked || false : false); // Khởi tạo isBookmarked từ note.isBookmarked
+    const [selectedColor, setSelectedColor] = useState(note ? note.color || '#FFFFFF' : '#FFFFFF'); // Initialize selectedColor from note.color
+    const [selectedLabels, setSelectedLabels] = useState(note ? note.labelIds || [] : []); // Initialize selectedLabels from note.labelIds
+    const [isBookmarked, setIsBookmarked] = useState(note ? note.isBookmarked || false : false); // Initialize isBookmarked from note.isBookmarked
     const navigation = useNavigation();
     const { labels } = useContext(LabelContext);
 
@@ -27,7 +29,7 @@ const EditNoteScreen = ({ route }) => {
     };
 
     const saveNoteHandler = () => {
-        // Kiểm tra xem note có tồn tại không trước khi lưu
+        // Check if note exists before saving
         if (!note) {
             return;
         }
@@ -41,18 +43,19 @@ const EditNoteScreen = ({ route }) => {
     };
 
     const deleteNoteHandler = () => {
-        // Kiểm tra xem note có tồn tại không trước khi xóa
+        // Check if note exists before deleting
         if (!note) {
             return;
         }
 
-        // Tạo một bản sao của mảng notes
-        const updatedNotes = notes.filter(n => n.id !== noteId);
+        // Move the note to trash
+        const updatedTrash = [...trashs, note];
+        updateTrash(updatedTrash);
 
-        // Cập nhật context với mảng notes đã cập nhật
+        // Remove the note from notes
+        const updatedNotes = notes.filter(n => n.id !== noteId);
         updateNotes(updatedNotes);
 
-        // Điều hướng trở lại hoặc thực hiện các hành động khác
         navigation.goBack();
     };
 
